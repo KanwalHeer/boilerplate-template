@@ -3,10 +3,10 @@ import Link from "next/link"
 export default function HomePage() {
   return (
     <div>
-      <h1 className="text-center font-extrabold text-4xl m-8">Welcome in Presise Tech!</h1>
+      <h1 className="text-center font-extrabold text-4xl m-14">Welcome in Presise Tech!</h1>
       <div className="flex flex-col lg:flex-row justify-center items-center gap-6">
-        <button className="px-6 py-2 bg-blue-300 hover:bg-blue-600 text-lg font-bold rounded-xl shadow-lg"><Link href={'/auth/sign-up'}>Signup</Link></button>
-        <button className="px-6 py-2 bg-blue-300 hover:bg-blue-600 text-lg font-bold rounded-xl shadow-lg"><Link href={'/auth/sign-in'}>Login</Link></button>
+        <button className="text-white hover:text-black px-6 py-2 bg-blue-700 hover:bg-blue-200 text-lg font-bold rounded-lg shadow-lg"><Link href={'/auth/sign-up'}>Signup</Link></button>
+        <button className=" text-white hover:text-black px-6 py-2 bg-blue-700 hover:bg-blue-200 text-lg font-bold rounded-lg shadow-lg"><Link href={'/auth/sign-in'}>Login</Link></button>
       </div>
     </div>
   )

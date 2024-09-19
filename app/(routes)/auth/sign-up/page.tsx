@@ -1,67 +1,110 @@
 'use client'; 
-import { signIn, useSession } from "next-auth/react";
+import { signIn,useSession } from "next-auth/react";
 import { FaGoogle } from "react-icons/fa";
 import { useRouter } from "next/navigation"; 
-import { useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
-//component
-export default function Home() {
-  const { data: session } = useSession();
+//react component
+export default function SignUp() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  
+
   const router = useRouter();
+  const { data: session } = useSession();
 
-  //use  useeffect for mountaining
-  useEffect(() => {
+  if (session) {
+    router.push('/dashboard');
+  }
 
-    //redirect the user to dashboard after login
-    if (session) {
-      router.push("/auth/sign-in");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  
+    if (!name || !email || !password) {
+      setError("All fields are necessary.");
+      return;
     }
-  }, [session, router]);
-
- 
-
+  
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+  
+      if (res.ok) {
+        const form = e.currentTarget as HTMLFormElement; // Explicitly cast to HTMLFormElement
+        form.reset();
+        router.push("/auth/sign-in");
+      } else {
+        setError("User registration failed.");
+      }
+    } catch (error) {
+      setError("Error during registration: " + error);
+    }
+  };
+  
   return (
-    <div className="flex items-center justify-center h-screen bg-white">
-      <div className="max-w-md w-full shadow-lg rounded-lg bg-white p-2">
-        <h1 className="text-3xl font-bold text-gray-800 text-center m-3">Signup</h1>
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="shadow-xl p-8 rounded-lg  border-blue-500 bg-white max-w-md w-full">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Sign Up</h1>
 
-        {/* form for input fields */}
-        <form className="flex flex-col justify-start items-center w-full p-8 border-2 gap-4">
-           <input
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input
+            onChange={(e) => setName(e.target.value)}
             type="text"
-            placeholder="Enter Your Name"
-            className="border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-300 px-8 py-2"
-           />
-           <input
-            type="email"
-            placeholder="Enter Your Email"
-            className="border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-300 px-8 py-2"
-           />
-           <input
-            type="password" 
-            placeholder="Enter Your Password"
-            className="border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-300 px-8 py-2"
+            placeholder="Full Name"
+            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-
-          {/* sigup button */}
-          <button type="submit" className="px-8 py-2 bg-blue-400 rounded-xl font-bold text-gray-800 hover:bg-gray-200 hover:text-blue-800">
-            Signup
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            placeholder="Email"
+            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            placeholder="Password"
+            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button 
+            type="submit"
+            className="bg-blue-600 text-white font-bold cursor-pointer px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
+          >
+            Sign Up
           </button>
 
+          {error && (
+            <div className="bg-red-500 text-white w-fit text-sm py-2 px-4 rounded-md mt-4">
+              {error}
+            </div>
+          )}
+
+
           {/* login with google provider */}
-          <h1 className="text-center">Signup with Google</h1>
           <div
-            className="text-center justify-center hover:underline cursor-pointer"
+            className="text-center items-center justify-center flex flex-col h cursor-pointer gap-3"
             onClick={() => signIn('google')} 
           >
-            <FaGoogle className="text-[#4285F4] text-xl text-center" />
+            <h1 className="text-center text-gray-700">Signup with Google</h1>
+            <FaGoogle className="text-[#4285F4] text-xl text-center hover:text-red-700" />
           </div>
         </form>
         <div className="text-center">
-          <button className="text-sm text-block mt-4 mb-4 hover:underline block text-center">
-            Allready have an account? <span className="underline text-blue-700"><Link href={'/auth/sign-in'}>Login</Link></span>
-          </button>
+            <Link href="/auth/sign-in" className="text-sm text-gray-600 hover:underline mt-4 block text-center">
+            Already have an account? <span className="underline text-blue-700">Sign In</span>
+          </Link>
         </div>
       </div>
     </div>
